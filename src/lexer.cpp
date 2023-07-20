@@ -1,8 +1,8 @@
 #include <iostream>
 #include "main.hpp"
 
-static int gettok(){
-    static int lastChar = ' ';
+int gettok(){
+    int lastChar = ' ';
 
     //Checks if the last character was whitespace and furthers the pointer
     while(isspace(lastChar)){
