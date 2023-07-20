@@ -1,7 +1,7 @@
 #include <iostream>
 #include "main.hpp"
 
-int gettok(){
+static int gettok(){
     static int lastChar = ' ';
 
     //Checks if the last character was whitespace and furthers the pointer
@@ -55,7 +55,7 @@ int gettok(){
             }
     }
 
-    if(lastChar = EOF){
+    if(lastChar == EOF){
         return tok_eof;
     }
 

@@ -9,7 +9,7 @@ using namespace std;
 
 
 int main(){
-    
+    gettok();
 
     return 0;
 }
