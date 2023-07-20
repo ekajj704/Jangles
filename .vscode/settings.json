@@ -10,6 +10,7 @@
     "hide-files.files": [],
     "files.associations": {
         "iostream": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "memory": "cpp"
     }
 }
