@@ -1,22 +1,27 @@
-#ifndef _MAIN_H
-#define _MAIN_H
+#ifndef MAIN_H_
+#define MAIN_H_
 #include <string>
 
-enum Token{
-    tok_eof = -1,
-
-    tok_func = -2,
-
-    tok_define = -3,
-
-    tok_identifier = -4,
-
-    tok_number = -5,
-
+enum Tok{
+    tok_function = -1,
+    tok_import = -2,
+    tok_identifier = -3,
+    tok_let = -4,
+    tok_const = -5,
+    tok_table = -6,
+    tok_literal = -7,
+    tok_endLine = -8,
+    tok_symbol = -11,
+    tok_eof = -12,
+    tok_conditional = -13,
+    tok_return = -14,
+    tok_tab = -16,
 };
 
-static std::string IdentifierString;
-static double NumVal;
-
+class Token{
+    public:
+        int Tok;
+        std::string StringVal;
+};
 
 #endif
