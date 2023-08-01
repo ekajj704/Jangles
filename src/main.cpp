@@ -11,7 +11,7 @@ void compile(std::string name){
 
     system(oCommand.c_str());
     system(cCommand.c_str());
-    //system(del.c_str());
+    system(del.c_str());
     
 
 }

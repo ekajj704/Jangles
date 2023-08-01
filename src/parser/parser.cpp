@@ -180,8 +180,13 @@ int ParseLine(){
         GetNextToken();
     }
 
-    if(CurToken.Tok == tok_eof && CurToken.Tok == tok_endLine){
+    if(CurToken.Tok == tok_eof || CurToken.Tok == tok_endLine){
         return 0;
+    }
+
+    while (LineLevel < CurLevel)
+    {
+        EatLevel(LineLevel);
     }
 
     if(LineLevel > LevelOwners.size() - 1)
