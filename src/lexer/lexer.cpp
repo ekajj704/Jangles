@@ -12,7 +12,7 @@ char GetChar(){
         return '\n';
     char Char = line.at(i);
     i++;
-    //printf("%c\n", Char);
+    printf("%d\n", i -1);
     return Char;
 }
 
@@ -171,6 +171,6 @@ Token getTok(){
 
 Token gettok(){
     Token token = getTok();
-    //printf("Token place: %s\n", token.StringVal.c_str());
+    printf("Token place: %d\n", token.Tok);
     return token;
 }

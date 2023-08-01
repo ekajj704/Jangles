@@ -180,7 +180,9 @@ int ParseLine(){
         GetNextToken();
     }
 
-    EatLevel(LineLevel);
+    if(CurToken.Tok == tok_eof && CurToken.Tok == tok_endLine){
+        return 0;
+    }
 
     if(LineLevel > LevelOwners.size() - 1)
         LineLevel = LevelOwners.size() - 1;
