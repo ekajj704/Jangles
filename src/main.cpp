@@ -6,12 +6,12 @@
 
 void compile(std::string name){
     std::string oCommand = "g++ -Wall -c " + name + ".cpp";
-    std::string cCommand = "g++ " + name + ".cpp -o " + name + ".exe";
+    std::string cCommand = "g++ " + name + ".cpp  -lmingw32 -lSDL2main -lSDL2 -o " + name + ".exe";
     std::string del = "del " + name + ".cpp " + name + ".hpp " + name + ".o";
 
     system(oCommand.c_str());
     system(cCommand.c_str());
-    system(del.c_str());
+    //system(del.c_str());
     
 
 }

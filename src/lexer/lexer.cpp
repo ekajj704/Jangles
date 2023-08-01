@@ -151,7 +151,7 @@ Token getTok(){
     }
 
 
-    while(!isalnum(lastChar = GetChar()) && !isspace(lastChar) && lastChar != ',' && lastChar != '\"' && lastChar != ')')
+    while(!isalnum(lastChar = GetChar()) && !isspace(lastChar) && lastChar != ',' && lastChar != '\"' && lastChar != ')' && lastChar != ':')
         newToken.StringVal += lastChar;
     
     if(newToken.StringVal == "//"){
