@@ -266,7 +266,7 @@ int Parse(std::ifstream *aSrcfptr, std::string name){
             break;
         }
     }
-    printf("%d\n", LevelOwners.size());
+    printf("%Lu\n", LevelOwners.size());
 
     while (CurLevel > 0)
     {

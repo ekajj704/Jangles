@@ -2,11 +2,17 @@
 #include "lexer/lexer.hpp"
 #include "parser/parser.hpp"
 #include <fstream>
+#include <windows.h>
 
 
 void compile(std::string name){
-    std::string oCommand = "g++ -Wall -c " + name + ".cpp";
-    std::string cCommand = "g++ " + name + ".cpp  -lmingw32 -lSDL2main -lSDL2 -o " + name + ".exe";
+    char buff[300];
+    GetModuleFileName(NULL, buff, 300);
+    std::string path = buff;
+    path = path.substr(0, path.length() - 11);
+    path += "MinGW\\bin\\gcc";
+    std::string oCommand = path + " -Wall -c " + name + ".cpp";
+    std::string cCommand = path + " " + name + ".cpp  -lmingw32 -lSDL2main -lSDL2 -o " + name + ".exe";
     std::string del = "del " + name + ".cpp " + name + ".hpp " + name + ".o";
 
     system(oCommand.c_str());
