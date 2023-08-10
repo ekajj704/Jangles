@@ -1,9 +1,10 @@
 #include "./filewriter.hpp"
+#include "../main.hpp"
 
 int writecfile(std::string name, std::string cbody){
     std::string filename = name + ".cpp";
     FILE* fptr = fopen(filename.c_str(), "w+");
-    fprintf(fptr, "#include \"%s.hpp\"\nusing namespace std;\n%s", name.c_str(), cbody.c_str());
+    fprintf(fptr, "#include \"%s.hpp\"\n%s\n", name.c_str(), cbody.c_str());
     fclose(fptr);
     return 0;
 }
@@ -11,7 +12,14 @@ int writecfile(std::string name, std::string cbody){
 int writehfile(std::string name, std::string hbody){
     std::string filename = name + ".hpp";
     FILE* fptr = fopen(filename.c_str(), "w+");
-    fprintf(fptr, "#ifndef %s_H_\n#define %s_H_\n#include <iostream>\n#include <time.h>\n#include <string>\n#include <vector>\n#include <SDL2/SDL.h>\n%s#endif", name.c_str(), name.c_str(), hbody.c_str());
+    
+    std::string SDLimport = "";
+    if(getflag(SDL_FLAG)){
+        SDLimport = "#include <SDL2/SDL.h>";
+        
+    }
+    
+    fprintf(fptr, "#ifndef %s_H_\n#define %s_H_\n#include <janglib.hpp>\n%s\n%s#endif", name.c_str(), name.c_str(), SDLimport.c_str(),  hbody.c_str());
     fclose(fptr);
     return 0;
 }

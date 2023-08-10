@@ -171,6 +171,18 @@ VariableExpr ParseLet(){
     return VariableExpr(Arg, Val);
 }
 
+void ParseImport(){
+    GetNextToken();
+    if(CurToken.StringVal == "SDL"){
+        setflag(SDL_FLAG);
+        GetNextToken();
+        return;
+    }
+
+    fprintf(stderr, "Error: unrecognized dependency \"%s\"\n", CurToken.StringVal.c_str());
+    GetNextToken();
+}
+
 int ParseLine(){
     
     size_t LineLevel = 0;
@@ -233,6 +245,10 @@ int ParseLine(){
         auto TableBlock = std::make_unique<BlockExpr>();
     }
 
+    if(CurToken.Tok == tok_import){
+        ParseImport();
+    }
+
 
     if(CurToken.Tok == tok_endLine){
         return 1;
@@ -266,7 +282,6 @@ int Parse(std::ifstream *aSrcfptr, std::string name){
             break;
         }
     }
-    printf("%Lu\n", LevelOwners.size());
 
     while (CurLevel > 0)
     {

@@ -2,6 +2,13 @@
 #define MAIN_H_
 #include <string>
 
+enum Flags{
+    SDL_FLAG = 0,
+};
+
+void setflag(int flag);
+int getflag(int flag);
+
 enum Tok{
     tok_function = -1,
     tok_import = -2,
