@@ -2,7 +2,6 @@
 #define BOOK_H_
 
 #include "../headers/main.hpp"
-#include "librarian.hpp"
 #include <set>
 
 using namespace std;
@@ -14,7 +13,10 @@ protected:
     string bookName;
 
 public:
-    Book(string name, set<string> fnNames): bookName(name), functions(fnNames) {}
+    Book(string name, set<string> fnNames){
+        bookName = name;
+        functions = fnNames;
+    }
     ~Book() = default;
 
     bool HasFunction(string fn){

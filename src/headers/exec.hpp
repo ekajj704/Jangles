@@ -9,6 +9,7 @@ using namespace std;
 int ExecFunction(Function* func);
 int ExecFunction(Function* func, vector<Token>* args);
 vector<Token> ExecOp(vector<Token>* expr);
+void CheckVar(vector<Token>* tok);
 
 
 #endif

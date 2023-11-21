@@ -1,8 +1,10 @@
 #include "./headers/main.hpp"
 #include "./headers/parser.hpp"
-#include "./libs/all_books.hpp"
+#include "./libs/bookInjector.hpp"
 
 int main(int argc, char** argv){
+
+    InjectBooks();
 
     if(argc < 2){
         fprintf(stderr, "ERROR: No file specified\n");
@@ -18,7 +20,5 @@ int main(int argc, char** argv){
 
     ParseFile(fptr);
 
-    fcloseall();
-    
-    return 0;
+    exit(0);
 }

@@ -7,7 +7,6 @@ vector<Book*> books;
 int InjectBook(Book *newBook){
     books.push_back(newBook);
     labels.push_back(newBook->Name());
-    perror(to_string(labels.size()).c_str());
     return 0;
 }
 
@@ -48,8 +47,8 @@ vector<Token> RunBookFunc(vector<Token>* LHS, vector<Token>* RHS){
         exit(-1);
     }
 
-    if(!books.at(index)->HasFunction(RHS->front().val)){
-        string error = "No function matching the name " + func.val + " in namespace " + book.val;
+    if(!(books.at(index)->HasFunction(func.val))){
+        string error = "No function matching the name <" + func.val + "> in namespace <" + book.val + ">";
         perror(error.c_str());
         exit(-1);
     }

@@ -665,11 +665,6 @@ vector<Token> ExecExpression(vector<Token>* expr){
         return NULL_TOKEN;
     }
 
-    //Returns itself if it is the length of 1
-    if(expr->size() == 1){
-        return *expr;
-    }
-
     //Checks if it is a variable declaration and executes it
     if(expr->front().tok == TOK_LET){
         expr->erase(expr->begin());
@@ -678,7 +673,7 @@ vector<Token> ExecExpression(vector<Token>* expr){
     }
 
     //returns a empty token if it doesn't match everthing before
-    return NULL_TOKEN;
+    return *expr;
 }
 
 //Execute lines with Operators in them
@@ -756,7 +751,7 @@ vector<Token> ExecOp(vector<Token>* expr){
         auto LHS = vector<Token>(expr->begin(), expr->begin() + opIndex);
         auto RHS = NULL_TOKEN;
 
-        if(opIndex != expr->size() - 1){
+        if(opIndex < expr->size() - 1){
             RHS = vector<Token>(expr->begin() + opIndex + 1, expr->end());
         }
 
@@ -859,7 +854,7 @@ vector<Token> ExecOp(vector<Token>* expr){
         
         case TOK_RETURN:
             functionReturn = rightLit;
-            PrintVectorDebug(&rightLit);
+            //PrintVectorDebug(&rightLit);
             hasReturned = true;
             return NULL_TOKEN;
             break;
@@ -902,7 +897,7 @@ int ExecFunction(Function* func){
         }
         auto buff = func->GetLine(currentLine.back());
         buff = ExecLine(&buff);
-        PrintVectorDebug(&buff);
+        //PrintVectorDebug(&buff);
         currentLine.back()++;
     }
 
