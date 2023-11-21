@@ -1,176 +1,310 @@
-#include <iostream>
-#include "../main.hpp"
-#include "../parser/parser.hpp"
+#include "../headers/main.hpp"
 
-std::string line;
-static size_t i = 0;
-static int lastChar = ' ';
-static Token newToken;
+static char lastChar;
 
-char GetChar(){
-    if(i == line.length())
-        return '\n';
-    char Char = line.at(i);
-    i++;
-    //printf("%d\n", i -1);
-    return Char;
+static FILE* fptr;
+
+void SetFile(FILE* newfptr){
+    fptr = newfptr;
 }
 
-void SetLine(std::string nextLine){
-    lastChar = ' ';
-    i = 0;
-    line = nextLine;
-    //printf("%s\n", line.c_str());
+
+//Helper funciton for debugging
+//Gets the next character
+void GetChar(){
+    lastChar = fgetc(fptr);
+    //cout << lastChar << "\n";
 }
 
-Token getTok(){    
-    int spaces = 0;
-    
-    
-    while(lastChar == ' '){
-        lastChar = GetChar();
+Token GetTok(){
+    Token newTok = Token();
+    int spaceCounter = 0;
+
+    if(lastChar == 0)
+        GetChar();
+
+    //Ignore whitespace
+    while(isspace(lastChar) && lastChar != '\n'){
+        spaceCounter++;
         
-        spaces++;
-        if(spaces == 4){
-            newToken.Tok = tok_tab;
-            return newToken;
+        if(lastChar == '\t' || spaceCounter == 4){
+            newTok.tok = TOK_TAB;
+            GetChar();
+            return newTok;
         }
-    }
-
-    
-    if(lastChar == '\n' && isEOF()){
-        newToken.Tok = tok_eof;
-        return newToken;
+        
+        GetChar();
     }
 
     if(lastChar == '\n'){
-        newToken.Tok = tok_endLine;
-        return newToken;
+        newTok.tok = TOK_ENDLINE;
+        GetChar();
+        return newTok;
     }
     
+    //Detect End of File
+    if(lastChar == EOF || lastChar == 0){
+        newTok.tok = TOK_EOF;
+        return newTok;
+    }
+
+    //Detect numbers
+    if(isdigit(lastChar) || lastChar == '.'){
+        newTok.val = lastChar;
+        GetChar();
+        while(isdigit(lastChar) || lastChar == '.'){
+            newTok.val += lastChar;
+            GetChar();
+        }
+        newTok.tok = TOK_NUMBER;
+        if(newTok.val == "."){
+            newTok.tok = TOK_DOT;
+        }
+        return newTok;  
+    }
+
+    //identifiers
     if(isalpha(lastChar)){
-        newToken.StringVal = lastChar;
-        //printf("%d :: %s\n", i, newToken.StringVal.c_str());
+        newTok.val = lastChar;
+        GetChar();
+        while(isalnum(lastChar)){
+            newTok.val += lastChar;
+            GetChar();
+        }
 
-        while(isalnum(lastChar = GetChar()))
-            newToken.StringVal += lastChar;
+        if(newTok.val == "fn"){
+            newTok.tok = TOK_FN;
+            return newTok;
+        }
 
-        if(newToken.StringVal == "fn"){
-            newToken.Tok = tok_function;
-            return newToken;
+        if(newTok.val == "let"){
+            newTok.tok = TOK_LET;
+            return newTok;
+        }
+
+        if(newTok.val == "then"){
+            newTok.tok = TOK_THEN;
+            return newTok;
+        }
+
+        if(newTok.val == "return"){
+            newTok.tok = TOK_RETURN;
+            return newTok;
+        }
+
+        if(newTok.val == "while"){
+            newTok.tok = TOK_WHILE;
+            return newTok;
+        }
+
+        if(newTok.val == "if"){
+            newTok.tok = TOK_IF;
+            return newTok;
+        }
+
+        if(newTok.val == "true" || newTok.val == "false"){
+            newTok.tok = TOK_BOOL;
+            return newTok;
+        }
+
+        if(lastChar == '('){
+            newTok.tok = TOK_FUNCTIONCALL;
+            return newTok;
         }
         
-        if(newToken.StringVal == "import"){
-            newToken.Tok = tok_import;
-            return newToken;
-        }
 
-        if(newToken.StringVal == "let"){
-            newToken.Tok = tok_let;
-            return newToken;
-        }
+        newTok.tok = TOK_IDENTIFIER;
+        return newTok;
+    }
 
-        if(newToken.StringVal == "const"){
-            newToken.Tok = tok_const;
-            return newToken;
+    //String lits
+    if(lastChar == '"'){
+        GetChar();
+        newTok.val = "";
+        while(lastChar != '"'){
+            newTok.val += lastChar;
+            GetChar();
         }
+        newTok.tok = TOK_STRING;
+        lastChar = 0;
+        return newTok;
+    }
 
-        if(newToken.StringVal == "table"){
-            newToken.Tok = tok_table;
-            return newToken;
+    //compiler instructions
+    if(lastChar == '#'){
+        GetChar();
+        newTok.val = "";
+        while (isalnum(lastChar))
+        {
+            newTok.val += lastChar;
+            GetChar();
         }
+        newTok.tok = TOK_INSTRUCTION;
+        lastChar = 0;
 
-        if(newToken.StringVal == "return"){
-            newToken.Tok = tok_return;
-            return newToken;
-        }
+        return newTok;
+    }
 
-        if(newToken.StringVal == "if"){
-            newToken.Tok = tok_conditional;
-            return newToken;
-        }
+    switch (lastChar)
+    {
+    case ',':
+        newTok.tok = TOK_COMMA;
+        newTok.val = lastChar;
+        GetChar();
+        return newTok;
+        break;
 
-        if(newToken.StringVal == "while"){
-            newToken.Tok = tok_conditional;
-            return newToken;
+    case '(':
+        newTok.tok = TOK_START_PARENTHESIS;
+        newTok.val = lastChar;
+        GetChar();
+        return newTok;
+        break;
+
+    case ')':
+        newTok.tok = TOK_END_PARENTHESIS;
+        newTok.val = lastChar;
+        GetChar();
+        return newTok;
+        break;
+    
+    default:
+        break;
+    }
+
+    newTok.val = "";
+    while(!isalnum(lastChar) && !isspace(lastChar) && lastChar != EOF && lastChar != ',' && lastChar != '(' && lastChar != ')' && newTok.val != "//"){
+        newTok.val += lastChar;
+        GetChar();
+    }
+
+    if(newTok.val == "//"){
+        while(lastChar != '\n' && lastChar != EOF){
+            GetChar();
         }
         
-        newToken.Tok = tok_identifier;
-        return newToken;
+        return GetTok();
     }
 
-    if(lastChar == '.' || isdigit(lastChar)){
-        std::string numString;
-        numString = lastChar;
-        while (isdigit(lastChar = GetChar()) || lastChar == '.')
-            numString += lastChar;
-        
-        newToken.StringVal = numString;
-        newToken.Tok = tok_literal;
-        return newToken;
+    if(newTok.val == "!"){
+        newTok.tok = TOK_NOT;
+        return newTok;
     }
 
+    if(newTok.val == "&&"){
+        newTok.tok = TOK_AND;
+        return newTok;
+    }
+
+    if(newTok.val == "||"){
+        newTok.tok = TOK_OR;
+        return newTok;
+    }
+
+    if(newTok.val == "=="){
+        newTok.tok = TOK_EQUALS;
+        return newTok;
+    }
     
-
-    newToken.StringVal = lastChar;
-
-    if(lastChar == ','){
-        newToken.Tok = tok_symbol;
-        lastChar = GetChar();
-        return newToken;
+    if(newTok.val == "!="){
+        newTok.tok = TOK_NOT_EQUAL;
+        return newTok;
     }
 
-    if(lastChar == '('){
-        newToken.Tok = tok_symbol;
-        lastChar = GetChar();
-        return newToken;
+    if(newTok.val == ">="){
+        newTok.tok = TOK_GREATER_OR_EQUAL;
+        return newTok;
     }
 
-    if(lastChar == ')'){
-        newToken.Tok = tok_symbol;
-        lastChar = GetChar();
-        return newToken;
+    if(newTok.val == "<="){
+        newTok.tok = TOK_LESS_OR_EQUAL;
+        return newTok;
     }
 
-    if(lastChar == '\"'){
-        newToken.Tok = tok_symbol;
-        lastChar = GetChar();
-        while(lastChar != '\"' && lastChar != '\n'){
-            newToken.StringVal += lastChar;
-            lastChar = GetChar();
-        }
-        if(lastChar != '\"'){
-            fprintf(stderr, "Error: Expected closing '\"'\n");
-            return newToken;
-        }
-
-        newToken.StringVal += lastChar;
-        lastChar = GetChar();
-
-        return newToken;
+    if(newTok.val == ">"){
+        newTok.tok = TOK_GREATER_THAN;
+        return newTok;
     }
 
-
-    while(!isalnum(lastChar = GetChar()) && !isspace(lastChar) && lastChar != ',' && lastChar != '\"' && lastChar != ')' && lastChar != ':')
-        newToken.StringVal += lastChar;
-    
-    if(newToken.StringVal == "//"){
-        while (lastChar != EOF && lastChar != '\r' && lastChar != '\n')
-            lastChar = GetChar();
-        
-        Token r = {1, ""};
-        return r;
+    if(newTok.val == "<"){
+        newTok.tok = TOK_LESS_THAN;
+        return newTok;
     }
 
-    newToken.Tok = tok_symbol;
-    return newToken;
-    
-    
+    if(newTok.val == "="){
+        newTok.tok = TOK_ASSIGN;
+        return newTok;
+    }
 
+    if(newTok.val == "+="){
+        newTok.tok = TOK_PLUS_ASSIGN;
+        return newTok;
+    }
+
+    if(newTok.val == "-="){
+        newTok.tok = TOK_SUB_ASSIGN;
+        return newTok;
+    }
+
+    if(newTok.val == "*="){
+        newTok.tok = TOK_MULTIPLY_ASSIGN;
+        return newTok;
+    }
+
+    if(newTok.val == "/="){
+        newTok.tok = TOK_DIVIDE_ASSIGN;
+        return newTok;
+    }
+
+    if(newTok.val == "+"){
+        newTok.tok = TOK_PLUS;
+        return newTok;
+    }
+
+    if(newTok.val == "++"){
+        newTok.tok = TOK_INCREMENT;
+        return newTok;
+    }
+
+    if(newTok.val == "-"){
+        newTok.tok = TOK_MINUS;
+        return newTok;
+    }
+
+    if(newTok.val == "--"){
+        newTok.tok = TOK_DECREMENT;
+        return newTok;
+    }
+
+    if(newTok.val == "*"){
+        newTok.tok = TOK_MULTIPLY;
+        return newTok;
+    }
+
+    if(newTok.val == "/"){
+        newTok.tok = TOK_DIVIDE;
+        return newTok;
+    }
+
+    if(newTok.val == "^"){
+        newTok.tok = TOK_POWER;
+        return newTok;
+    }
+
+    if(newTok.val == "."){
+        newTok.tok = TOK_DOT;
+        return newTok;
+    }
+
+    fprintf(stderr, "ERROR: unrecogized symbol: %s\n", newTok.val.c_str());
+
+    return newTok;
 }
 
-Token gettok(){
-    Token token = getTok();
-    //printf("Token place: %s\n", token.StringVal.c_str());
-    return token;
+//Helper function for debugging
+//Gets the next token
+Token NextToken(){
+    Token newTok = GetTok();
+    //printf("%d :: %s\n", newTok.tok, newTok.val.c_str());
+    return newTok;
 }

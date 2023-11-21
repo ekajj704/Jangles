@@ -5,9 +5,17 @@
         "**/.hg": true,
         "**/CVS": true,
         "**/.DS_Store": true,
-        "**/Thumbs.db": true
+        "**/Thumbs.db": true,
+        "**/*.crswap": true,
+        ".gitattributes": true,
+        ".gitignore": true,
+        "LICENSE": true
     },
-    "hide-files.files": [],
+    "hide-files.files": [
+        ".gitattributes",
+        ".gitignore",
+        "LICENSE"
+    ],
     "files.associations": {
         "iostream": "cpp",
         "string": "cpp",
@@ -50,6 +58,11 @@
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "typeinfo": "cpp",
-        "map": "cpp"
+        "map": "cpp",
+        "bit": "cpp",
+        "cstring": "cpp",
+        "optional": "cpp",
+        "string_view": "cpp",
+        "cinttypes": "cpp"
     }
 }

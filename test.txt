@@ -1,0 +1,7 @@
+something(1) * 3
+
+fn something(x)
+    let i = 0
+    console.print "hello"
+
+    return i++

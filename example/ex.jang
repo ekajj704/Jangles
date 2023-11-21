@@ -1,6 +1,0 @@
-fn main() -> int
-    if true
-        print("Hello, World")
-
-fn print(message: string)
-    std::cout << message + '\n'
